@@ -467,7 +467,7 @@ describe("Customer Controller", () => {
       expect(res.status.calledWith(HTTP_STATUS.NOT_FOUND)).to.be.true;
       const response = res.json.getCall(0).args[0];
       expect(response.status).to.equal("error");
-      expect(response.message).to.equal(ERROR_MESSAGES.CUSTOMER_NOT_FOUND);
+      expect(response.message).to.equal("Note not found");
     });
 
     it("should return INTERNAL_SERVER on error in deleteNote", async () => {
