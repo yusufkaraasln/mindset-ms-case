@@ -1,19 +1,18 @@
-
 export const services = [
   {
     path: 'auth',
-    target: 'http://localhost:4001',
+    target: process.env.USER_SERVICE_URL || 'http://localhost:4001',
   },
   {
     path: 'customers',
-    target: 'http://localhost:4002',
+    target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:4002',
   },
   {
     path: 'sales',
-    target: 'http://localhost:4003',
+    target: process.env.SALES_SERVICE_URL || 'http://localhost:4003',
   },
   {
     path: 'health-check',
-    target: 'http://localhost:8081',
+    target: process.env.HEALTH_CHECK_URL || 'http://localhost:8081',
   }
 ]; 
