@@ -5,7 +5,7 @@ import { logger } from './logger.js';
 
 dotenv.config();
 
-const seedAdmin = async () => {
+export const seedAdmin = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     logger.info('MongoDB connected for seeding');
@@ -15,8 +15,7 @@ const seedAdmin = async () => {
     
     if (existingAdmin) {
       logger.info('Admin user already exists');
-      await mongoose.connection.close();
-      return;
+       return;
     }
 
     // Create new admin user
@@ -29,11 +28,9 @@ const seedAdmin = async () => {
     });
 
     logger.info(`Admin user created with email: ${adminUser.email}`);
-    await mongoose.connection.close();
-    
+     
   } catch (error) {
     logger.error('Seeding error:', error);
-    process.exit(1);
   }
 };
 

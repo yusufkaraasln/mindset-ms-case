@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import { logger } from './utils/logger.js';
+import {seedAdmin} from './utils/seed.js';
 
 dotenv.config();
 
@@ -21,7 +22,11 @@ app.use(userRoutes);
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => logger.info('MongoDB connected successfully'))
-  .catch((err) => logger.error('MongoDB connection error:', err));
+  .catch((err) => logger.error('MongoDB connection error:', err))
+  .finally(() => {
+    logger.info('Seeding database...');
+    seedAdmin();
+  });
 
 // Error handling
 app.use((err, req, res, next) => {
