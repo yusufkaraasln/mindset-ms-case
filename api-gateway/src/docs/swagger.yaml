@@ -1,0 +1,706 @@
+openapi: 3.0.0
+info:
+  title: Comprehensive Microservices API Documentation
+  description: >
+    This documentation covers all endpoints for the Sales Service, User Service (Auth),
+    Customer Service, and Health Check API as exposed through the API Gateway.
+    All endpoints are accessible under the "/api" prefix.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:3000/api
+    description: API Gateway Endpoints
+tags:
+  - name: Sales Service
+    description: Endpoints for the Sales microservice.
+  - name: User Service
+    description: Endpoints for the User/Authentication microservice.
+  - name: Customer Service
+    description: Endpoints for the Customer microservice.
+  - name: Health Check
+    description: Endpoint for system health information.
+paths:
+  /sales:
+    get:
+      tags:
+        - Sales Service
+        - API Gateway
+      summary: Get a list of sales
+      description: Retrieve a list of sales with filtering and pagination.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number.
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of sales per page.
+          schema:
+            type: integer
+            default: 10
+        - name: customerId
+          in: query
+          description: Filter by customer ID.
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by sale status.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of sales with pagination.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      sales:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Sale'
+                      pagination:
+                        type: object
+                        properties:
+                          total:
+                            type: integer
+                          page:
+                            type: integer
+                          pages:
+                            type: integer
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - Sales Service
+        - API Gateway
+      summary: Create a new sale
+      description: Create a new sale record.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewSale'
+      responses:
+        '201':
+          description: Sale created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '500':
+          description: Internal Server Error
+  /sales/{id}:
+    get:
+      tags:
+        - Sales Service
+        - API Gateway
+      summary: Get sale by ID
+      description: Retrieve details of a specific sale.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Sale ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sale details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '404':
+          description: Sale not found.
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+        - Sales Service
+        - API Gateway
+      summary: Update a sale
+      description: Update an existing sale by ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Sale ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSale'
+      responses:
+        '200':
+          description: Sale updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '404':
+          description: Sale not found.
+        '500':
+          description: Internal Server Error
+    delete:
+      tags:
+        - Sales Service
+        - API Gateway
+      summary: Delete a sale
+      description: Delete a sale by ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Sale ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sale deleted successfully.
+        '404':
+          description: Sale not found.
+        '500':
+          description: Internal Server Error
+  /auth/login:
+    post:
+      tags:
+        - User Service
+        - API Gateway
+      summary: User login
+      description: Authenticate a user and retrieve a JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Unauthorized.
+  /auth/users:
+    get:
+      tags:
+        - User Service
+        - API Gateway
+      summary: Get list of users
+      description: Retrieve a list of users (Protected, ADMIN only).
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized.
+        '403':
+          description: Forbidden.
+    post:
+      tags:
+        - User Service
+        - API Gateway
+      summary: Create a new user
+      description: Create a new user.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error.
+  /auth/users/{id}:
+    put:
+      tags:
+        - User Service
+        - API Gateway
+      summary: Update a user
+      description: Update an existing user by ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error.
+    delete:
+      tags:
+        - User Service
+        - API Gateway
+      summary: Delete a user
+      description: Delete a user by ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: User ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: User deleted successfully.
+        '400':
+          description: Validation error.
+  /customers:
+    get:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Get list of customers
+      description: Retrieve a list of customers.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of customers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Create a new customer
+      description: Create a new customer record.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCustomer'
+      responses:
+        '201':
+          description: Customer created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '500':
+          description: Internal Server Error
+  /customers/{id}:
+    get:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Get customer by ID
+      description: Retrieve details of a specific customer.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer details retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found.
+        '500':
+          description: Internal Server Error
+    put:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Update a customer
+      description: Update an existing customer by ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomer'
+      responses:
+        '200':
+          description: Customer updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found.
+        '500':
+          description: Internal Server Error
+    delete:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Delete a customer
+      description: Delete a customer by ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer deleted successfully.
+        '404':
+          description: Customer not found.
+        '500':
+          description: Internal Server Error
+  /customers/{id}/notes:
+    post:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Add a note to a customer
+      description: Add a note for the specified customer.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '200':
+          description: Note added successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found.
+        '500':
+          description: Internal Server Error
+  /customers/{id}/notes/{noteId}:
+    put:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Update a note for a customer
+      description: Update a specific note for the specified customer.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer ID.
+          required: true
+          schema:
+            type: string
+        - name: noteId
+          in: path
+          description: Note ID.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Note'
+      responses:
+        '200':
+          description: Note updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer or Note not found.
+        '500':
+          description: Internal Server Error
+    delete:
+      tags:
+        - Customer Service
+        - API Gateway
+      summary: Delete a note from a customer
+      description: Delete a specific note for the specified customer.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: Customer ID.
+          required: true
+          schema:
+            type: string
+        - name: noteId
+          in: path
+          description: Note ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Note deleted successfully.
+        '404':
+          description: Customer or Note not found.
+        '500':
+          description: Internal Server Error
+  /health-check:
+    get:
+      tags:
+        - Health Check
+        - API Gateway
+      summary: Health check
+      description: Retrieve system health information.
+      responses:
+        '200':
+          description: System health information retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                  uptime:
+                    type: number
+                  memoryUsage:
+                    type: object
+                  cpuUsage:
+                    type: object
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Sale:
+      type: object
+      properties:
+        _id:
+          type: string
+        customerId:
+          type: string
+        currentStatus:
+          type: string
+        notes:
+          type: array
+          items:
+            type: string
+        history:
+          type: array
+          items:
+            type: object
+            properties:
+              status:
+                type: string
+              note:
+                type: string
+              updatedAt:
+                type: string
+                format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    NewSale:
+      type: object
+      required:
+        - customerId
+      properties:
+        customerId:
+          type: string
+        currentStatus:
+          type: string
+          default: "New"
+        notes:
+          type: array
+          items:
+            type: string
+    UpdateSale:
+      type: object
+      properties:
+        currentStatus:
+          type: string
+        note:
+          type: string
+        notes:
+          type: array
+          items:
+            type: string
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+    Customer:
+      type: object
+      properties:
+        _id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        company:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    NewCustomer:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        company:
+          type: string
+        status:
+          type: string
+          default: "ACTIVE"
+    UpdateCustomer:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        company:
+          type: string
+        status:
+          type: string
+    Note:
+      type: object
+      properties:
+        content:
+          type: string

@@ -4,6 +4,13 @@ import { logger } from './utils/logger.js';
 import { configureMiddlewares, errorHandler } from './middlewares/index.js';
 import { configureRoutes } from './routes/index.js';
 import crypto from 'crypto';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const startServer = async () => {
   try {
@@ -14,6 +21,11 @@ const startServer = async () => {
       req.id = crypto.randomUUID();
       next();
     });
+
+    // Serve Swagger docs before any auth middleware is applied
+    const swaggerFilePath = path.resolve(__dirname, 'docs/swagger.yaml');
+    const swaggerDocument = YAML.load(swaggerFilePath);
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
     // Configure middlewares
     configureMiddlewares(app);
