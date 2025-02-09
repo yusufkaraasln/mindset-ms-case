@@ -7,7 +7,10 @@ import { logger } from '../utils/logger.js';
  */
 export const jwtErrorHandler = (err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
-    logger.error(`JWT Error: ${err.message}`);
+    logger.error('JWT Error:', { 
+      error: err.message,
+      token: req.headers.authorization
+    });
     return res.status(401).json({
       message: 'Authentication required',
       details: err.message,
@@ -21,11 +24,14 @@ export const jwtErrorHandler = (err, req, res, next) => {
  * JWT authentication middleware configuration
  */
 export const configureJWT = () => {
+  logger.info('JWT Config:', { secret: JWT_CONFIG.SECRET });
+  
   return expressjwt({
     secret: JWT_CONFIG.SECRET,
     algorithms: ['HS256']
   }).unless({
     path: [
+      '/api/auth/login',
       '/api/health-check',
       { url: /^\/api\/public\/.*/, methods: ['GET'] }
     ]
