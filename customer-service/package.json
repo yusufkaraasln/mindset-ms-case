@@ -1,0 +1,23 @@
+{
+  "name": "customer-service",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write 'src/**/*.js'"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^6.7.2",
+    "cors": "^2.8.5",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "eslint": "^7.32.0",
+    "prettier": "^2.3.2"
+  }
+} 
