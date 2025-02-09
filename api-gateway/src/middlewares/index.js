@@ -3,10 +3,7 @@ import { configureRateLimiter } from './rateLimiter.js';
 import { configureJWT, jwtErrorHandler } from './auth.js';
 import { errorHandler } from './errorHandler.js';
 
-/**
- * Configure all middlewares
- * @param {import('express').Application} app
- */
+
 export const configureMiddlewares = (app) => {
   configureSecurity(app);
   configureRateLimiter(app);

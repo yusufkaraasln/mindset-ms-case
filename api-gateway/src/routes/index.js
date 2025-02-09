@@ -3,10 +3,7 @@ import { logger } from '../utils/logger.js';
 import { config } from '../config/index.js';
 import { JWT_CONFIG } from '../utils/constants.js';
 
-/**
- * Configure service routes
- * @param {import('express').Application} app
- */
+
 export const configureRoutes = (app) => {
   config.services.forEach(({ path, target, auth = true }) => {
     app.use(`/api/${path}`, proxy(target, {

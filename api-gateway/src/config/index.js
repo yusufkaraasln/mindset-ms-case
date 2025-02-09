@@ -3,9 +3,6 @@ import { services } from './services.js';
 
 dotenv.config();
 
-/**
- * @type {Object}
- */
 export const config = {
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 3000,

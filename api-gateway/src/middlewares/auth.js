@@ -40,7 +40,6 @@ export const configureJWT = () => {
 
 /**
  * Role-based authorization middleware
- * @param {string[]} roles - Allowed roles
  */
 export const authorize = (roles = []) => {
   return (req, res, next) => {
