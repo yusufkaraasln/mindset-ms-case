@@ -28,7 +28,7 @@ export const authorizeRoles = (allowedRoles = []) => {
       }
     }
     
-    // Artık req.user var, rolleri kontrol ediyoruz.
+    // get user roles and check if they are authorized
     const userRoles = req.user?.roles;
     if (!userRoles) {
       return res.status(HTTP_STATUS.UNAUTHORIZED).json({
@@ -36,7 +36,7 @@ export const authorizeRoles = (allowedRoles = []) => {
       });
     }
     
-    // Kullanıcının rollerinden en az birinin allowedRoles arasında olup olmadığını kontrol et.
+    // user roles and allowed roles are compared
     const isAuthorized = allowedRoles.some(role => userRoles.includes(role));
     if (!isAuthorized) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({

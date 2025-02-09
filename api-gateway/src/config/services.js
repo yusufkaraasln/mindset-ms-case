@@ -9,6 +9,10 @@ export const services = [
     target: 'http://localhost:4002',
   },
   {
+    path: 'sales',
+    target: 'http://localhost:4003',
+  },
+  {
     path: 'health-check',
     target: 'http://localhost:8081',
   }
