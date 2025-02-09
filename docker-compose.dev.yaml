@@ -1,0 +1,101 @@
+version: "3.8"
+
+services:
+  mongodb-sales:
+    image: mongo:latest
+    container_name: mongodb-sales
+    ports:
+      - "27017:27017"  
+    volumes:
+      - mongo_data_sales:/data/db
+
+  mongodb-user:
+    image: mongo:latest
+    container_name: mongodb-user
+    ports:
+      - "27018:27017"  
+    volumes:
+      - mongo_data_user:/data/db
+
+  mongodb-customers:
+    image: mongo:latest
+    container_name: mongodb-customers
+    ports:
+      - "27019:27017"  
+    volumes:
+      - mongo_data_customers:/data/db
+
+  sales-service:
+    build:
+      context: ./sales-service
+      dockerfile: Dockerfile
+    container_name: sales-service
+    ports:
+      - "4003:4003"
+    environment:
+      - PORT=4003
+      - MONGODB_URI=mongodb://mongodb-sales:27017/sales-service
+    depends_on:
+      - mongodb-sales
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - MONGODB_URI=mongodb://mongodb-user:27017/auth-service
+      - JWT_SECRET=secretkey
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=admin123
+    depends_on:
+      - mongodb-user
+
+  customer-service:
+    build:
+      context: ./customer-service
+      dockerfile: Dockerfile
+    container_name: customer-service
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - MONGODB_URI=mongodb://mongodb-customers:27017/customer-service
+    depends_on:
+      - mongodb-customers
+
+  health-check:
+    build:
+      context: ./health-check-api
+      dockerfile: Dockerfile
+    container_name: health-check
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - USER_SERVICE_URL=http://user-service:4001
+      - SALES_SERVICE_URL=http://sales-service:4003
+      - CUSTOMER_SERVICE_URL=http://customer-service:4002
+      - HEALTH_CHECK_URL=http://health-check:8081
+    depends_on:
+      - sales-service
+      - user-service
+      - customer-service
+
+volumes:
+  mongo_data_sales:
+  mongo_data_user:
+  mongo_data_customers:
