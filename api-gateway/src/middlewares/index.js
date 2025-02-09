@@ -8,9 +8,9 @@ export const configureMiddlewares = (app) => {
   configureSecurity(app);
   configureRateLimiter(app);
   
-  // JWT middleware ve error handler'ı doğru sırayla uygula
+  // Apply JWT middleware and error handler
   app.use(configureJWT());
-  app.use(jwtErrorHandler); // JWT hata yakalayıcısını genel error handler'dan önce ekle
+  app.use(jwtErrorHandler); // JWT error handler before global error handler
 };
 
 export { errorHandler }; 

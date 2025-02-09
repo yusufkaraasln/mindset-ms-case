@@ -15,7 +15,7 @@ export const configureRoutes = (app) => {
         logger.error(`Proxy error: ${err.message}`);
         next(err);
       },
-      // JWT token'ı mikroservislere iletme
+      // Send JWT token to microservices
       proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
         if (auth && srcReq.auth) {
           proxyReqOpts.headers['x-user-id'] = srcReq.auth.id;
