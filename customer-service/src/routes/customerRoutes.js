@@ -17,6 +17,7 @@ const router = express.Router();
 router.use(authorizeRoles(['ADMIN', 'SALES_REP']));
 
 // Customers CRUD endpoints
+router.post('/', createCustomer);
 router.get('/:id', getCustomerById);
 router.put('/:id', updateCustomer);
 router.delete('/:id', deleteCustomer);
